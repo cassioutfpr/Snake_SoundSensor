@@ -19,21 +19,21 @@ class Snake:
         self.fora = 0
         for x in range (0, self.larg):
             for y in range (0, self.alt):
-          	    self.Matrix[y][x] = "-"
+                self.Matrix[y][x] = "-"
 
-        self.Matrix[fru_larg][fru_alt] = "U"  	    
+        self.Matrix[fru_larg][fru_alt] = "U"        
         self.Matrix[l_snake][h_snake] = "O"
         print("#######SNAKE##FODA#######")    
         for j in range (0, score):
             if score != 0:
                 self.Matrix[l_bef[j]][h_bef[j]] = "O"
                 if l_snake == l_bef[j] and h_snake == h_bef[j]:
-                    self.fora = 1	  	    
+                    self.fora = 1           
                   
 
 def prin():
-    larg    = 15
-    alt     = 25 
+    larg    = 10
+    alt     = 15 
     l_snake = 6
     h_snake = 5
     fru_larg = random.randint(0,9)
@@ -42,21 +42,32 @@ def prin():
     cont_lista = 0
     l_bef = []
     h_bef = []
+    ent2 = "Q"
+    ult_ent = "w"
     while True:
-        global ent		
+        global cont
+        global ent      
         global got_fru
-        if ent == "s":
+        if cont == 1:
+            ent2 = "a"
+        elif cont == 2:
+            ent2 = "w"
+        elif cont == 3:
+            ent2 = "a"
+        elif cont == 4:
+            ent2 = "w"
+        if ent2 == "s":
             h_snake = h_snake +1
-            ult_ent = ent
-        elif ent == "w":
+            ult_ent = ent2
+        elif ent2 == "w":
             h_snake = h_snake -1
-            ult_ent = ent
-        elif ent == "a":
+            ult_ent = ent2
+        elif ent2 == "a":
             l_snake = l_snake -1
-            ult_ent = ent
-        elif ent == "d":
+            ult_ent = ent2
+        elif ent2 == "d":
             l_snake = l_snake +1
-            ult_ent = ent
+            ult_ent = ent2
         else:
             if ult_ent == "s":
                 h_snake = h_snake +1
@@ -87,7 +98,7 @@ def prin():
         if Matrix.fora == 1:
             break
         print("SCORE:",  score)
-        time.sleep(0.3)        
+        time.sleep(0.8)        
         clear()
 
 def clear(): 
@@ -103,25 +114,31 @@ def inputa():
         ent = getpass.getpass("")
 
 def callback(channel):
-    contador = 0
+    global cont
     if GPIO.input(channel):
-        contador = contador + 1
+        cont = cont + 1
+        print(cont)
     else:
-    	contador = contador + 1
-
+        cont = cont + 1
+        print(cont)
+        
 GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
 GPIO.add_event_callback(channel, callback)  # assign function to GPIO PIN, Run function on change
 
+def sensor():
+# infinite loop
+    global cont
+    while True:
+        cont = 0
+        time.sleep(3)
 
 clear()
 got_fru = 0
 ent = "s"
+cont = 0
 t1 = threading.Thread(target= prin)
-t2 = threading.Thread(target=inputa)
+t2 = threading.Thread(target=sensor )
 t1.start()
 t2.start()
-# infinite loop
-while True:
-    time.sleep(1)
 t1.join()
 t2.join()
